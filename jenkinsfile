@@ -9,6 +9,14 @@ pipeline {
     ARM_TENANT_ID       = credentials('azure-tenant-id')
   }
 
+  parameters {
+    choice(
+      name: 'ACTION',
+      choices: ['apply', 'destroy'],
+      description: 'Select action to perform'
+    )
+  }
+
   stages {
     stage('Checkout') {
       steps {
@@ -29,25 +37,41 @@ pipeline {
     }
 
     stage('Terraform Plan') {
+      when {
+        expression { params.ACTION == 'apply' }
+      }
       steps {
         sh 'terraform plan -out=tfplan'
       }
     }
 
     stage('Terraform Apply') {
+      when {
+        expression { params.ACTION == 'apply' }
+      }
       steps {
         input message: 'Approve Terraform Apply?', ok: 'Apply'
         sh 'terraform apply -auto-approve tfplan'
+      }
+    }
+
+    stage('Terraform Destroy') {
+      when {
+        expression { params.ACTION == 'destroy' }
+      }
+      steps {
+        input message: 'Are you sure you want to DESTROY all resources?', ok: 'Yes, Destroy'
+        sh 'terraform destroy -auto-approve'
       }
     }
   }
 
   post {
     failure {
-      echo 'Terraform deployment failed!'
+      echo 'Pipeline failed!'
     }
     success {
-      echo 'Key Vault created successfully!'
+      echo 'Pipeline completed successfully!'
     }
   }
 }
