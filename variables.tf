@@ -13,5 +13,5 @@ variable "location" {
 variable "key_vault_name" {
   description = "Name of the Key Vault (must be globally unique, 3-24 chars)"
   type        = string
-  default     = "my-keyvault-demo"
+  default     = "my-keyvault-demo1"
 }
