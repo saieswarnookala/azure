@@ -2,6 +2,7 @@ pipeline {
   agent any
 
   environment {
+    PATH                = "/opt/homebrew/bin:${env.PATH}"
     ARM_CLIENT_ID       = credentials('azure-client-id')
     ARM_CLIENT_SECRET   = credentials('azure-client-secret')
     ARM_SUBSCRIPTION_ID = credentials('azure-subscription-id')
